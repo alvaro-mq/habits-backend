@@ -1,4 +1,5 @@
 export class ProfileDto {
+  sub: string;
   email: string;
   fullName: string;
   firstName: string;

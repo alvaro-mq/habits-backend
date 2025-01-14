@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, VerifyCallback } from 'passport-google-oauth20';
+import { Strategy } from 'passport-google-oauth20';
 import { ProfileDto } from './profile.dto';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly authService: AuthenticationService,
+  ) {
     super({
       clientID: configService.get<string>('GOOGLE_CLIENT_ID'),
       clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET'),
@@ -19,11 +23,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     accessToken: string,
     refreshToken: string,
     profile: any,
-    done: VerifyCallback,
   ): Promise<any> {
-    console.log(profile);
-    const { name, emails, displayName, photos } = profile;
+    const { name, emails, displayName, photos, id } = profile;
+
     const userProfile = new ProfileDto();
+    userProfile.sub = id;
     userProfile.accessToken = accessToken;
     userProfile.email = emails[0].value;
     userProfile.fullName = displayName;
@@ -32,6 +36,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     userProfile.lastName = name.familyName;
     userProfile.refreshToken = refreshToken;
 
-    done(null, userProfile);
+    const jwt = this.authService.generateJwt(userProfile);
+
+    // Retornar el JWT junto con los datos del usuario
+    return { ...userProfile, token: jwt };
+
+    // done(null, userProfile);
   }
 }
