@@ -27,7 +27,13 @@ export class User extends AbstractEntity {
   @Column({ name: 'full_name', length: 150 })
   fullName: string;
 
-  @Column({ length: 255 })
+  @Column({ name: 'first_name', length: 150, nullable: true })
+  firstName: string;
+
+  @Column({ name: 'last_name', length: 150, nullable: true })
+  lastNAme: string;
+
+  @Column({ length: 255, nullable: true })
   password: string;
 
   @Column({ nullable: true })

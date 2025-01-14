@@ -11,4 +11,9 @@ export class UserRepository extends Repository<User> {
   async getUserForEmail(email: string): Promise<User | null> {
     return await this.findOne({ where: { email } });
   }
+
+  async createUser(data: Partial<User>): Promise<User> {
+    const user = this.create(data);
+    return this.save(user);
+  }
 }
