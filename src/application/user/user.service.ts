@@ -3,6 +3,8 @@ import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { ProfileDto } from '../authentication/profile.dto';
 import { RoleRepository } from './role.repository';
+import { CreateUserDto } from './create-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -18,18 +20,55 @@ export class UserService {
   async createUser(
     profile: Partial<ProfileDto>,
     userAud: string,
+    provider: string,
   ): Promise<User> {
     const user = new User();
     user.email = profile.email;
     user.username = profile.email;
     user.firstName = profile.firstName;
-    user.lastNAme = profile.lastName;
+    user.lastName = profile.lastName;
     user.fullName = profile.fullName;
     user.photo = profile.picture;
+    user.oidcId = profile.sub;
+    user.oidc = provider;
     user.userCreated = userAud;
 
     const role = await this.roleRepository.getRoleForName('TUTOR');
     user.role = role;
     return this.userRepository.createUser(user);
+  }
+
+  // Crear un usuario
+  async createCustomUser(createUserDto: CreateUserDto): Promise<User> {
+    const { username, email, password, fullName } = createUserDto;
+
+    // Verificar si el email ya está registrado
+    const existingUser = await this.userRepository.getUserForEmail(email);
+    if (existingUser) {
+      throw new Error('Email is already registered');
+    }
+
+    // Cifrar la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const role = await this.roleRepository.getRoleForName('TUTOR');
+
+    // Crear un nuevo usuario
+    const newUser = this.userRepository.create({
+      username,
+      email,
+      fullName,
+      password: hashedPassword,
+      userCreated: 'hello',
+      role,
+    });
+
+    // Guardar en la base de datos
+    return this.userRepository.save(newUser);
+  }
+
+  // Obtener todos los usuarios (opcional)
+  async findAll(): Promise<User[]> {
+    return this.userRepository.find();
   }
 }

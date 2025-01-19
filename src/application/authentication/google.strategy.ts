@@ -35,12 +35,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     userProfile.firstName = name.givenName;
     userProfile.lastName = name.familyName;
     userProfile.refreshToken = refreshToken;
+    userProfile.role = 'TUTOR';
 
     const jwt = this.authService.generateJwt(userProfile);
 
-    // Retornar el JWT junto con los datos del usuario
     return { ...userProfile, token: jwt };
-
-    // done(null, userProfile);
   }
 }

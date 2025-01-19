@@ -7,4 +7,5 @@ export class ProfileDto {
   picture: string;
   accessToken: string;
   refreshToken: string;
+  role?: string;
 }

@@ -23,6 +23,12 @@ export class User extends AbstractEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ name: 'oidc_id', length: 100, nullable: true })
+  oidcId: string;
+
+  @Column({ name: 'oidc', length: 100, nullable: true })
+  oidc: string;
+
   @Column({ length: 50, unique: true })
   username: string;
 
@@ -33,7 +39,7 @@ export class User extends AbstractEntity {
   firstName: string;
 
   @Column({ name: 'last_name', length: 150, nullable: true })
-  lastNAme: string;
+  lastName: string;
 
   @Column({ length: 255, nullable: true })
   password: string;
