@@ -16,6 +16,9 @@ export class Memory extends AbstractEntity {
   @Column({ name: 'image_url', type: 'varchar', length: 255, nullable: true })
   imageUrl: string;
 
+  @Column({ type: 'date', nullable: true })
+  date: string;
+
   @ManyToOne(() => Pet, (pet) => pet.memory, {
     nullable: false,
     cascade: true,

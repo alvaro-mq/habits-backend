@@ -13,15 +13,21 @@ import { Request } from 'express';
 import { PetService } from './pet.service';
 import { PetDto } from './pet.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CarnetService } from './carnet.service';
+import { CredentialService } from './credential.service';
 import { Readable } from 'stream';
 import { Response } from 'express';
+import { MemoryDto } from './memory.dto';
+import { MemoryService } from './memory.service';
+import { VaccineDto } from './vaccine.dto';
+import { VaccineService } from './vaccine.service';
 
 @Controller('/pet')
 export class PetController {
   constructor(
     private readonly petService: PetService,
-    private readonly carnetService: CarnetService,
+    private readonly credentialService: CredentialService,
+    private readonly memoryService: MemoryService,
+    private readonly vaccineService: VaccineService,
   ) {}
 
   @Post()
@@ -48,9 +54,9 @@ export class PetController {
   }
 
   @Get(':id/credential')
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   async getCredential(@Res() res: Response) {
-    const pdfBuffer = await this.carnetService.generarCarnet();
+    const pdfBuffer = await this.credentialService.generarCarnet();
     const stream = new Readable();
 
     stream.push(pdfBuffer);
@@ -62,5 +68,47 @@ export class PetController {
     });
 
     stream.pipe(res);
+  }
+
+  @Post(':id/memory')
+  async createMemory(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() memoryDto: MemoryDto,
+    @Req() req: Request,
+  ) {
+    const user = req.user as any;
+    const memory = await this.memoryService.createMemory(
+      id,
+      memoryDto,
+      user.email,
+    );
+    return memory;
+  }
+
+  @Get(':id/memory')
+  async getMemories(@Param('id', new ParseUUIDPipe()) id: string) {
+    const memories = await this.memoryService.getMemories(id);
+    return memories;
+  }
+
+  @Post(':id/vaccine')
+  async createVaccine(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() vaccineDto: VaccineDto,
+    @Req() req: Request,
+  ) {
+    const user = req.user as any;
+    const vaccine = await this.vaccineService.createVaccine(
+      id,
+      vaccineDto,
+      user.email,
+    );
+    return vaccine;
+  }
+
+  @Get(':id/vaccine')
+  async getVaccines(@Param('id', new ParseUUIDPipe()) id: string) {
+    const vaccines = await this.vaccineService.getVaccines(id);
+    return vaccines;
   }
 }

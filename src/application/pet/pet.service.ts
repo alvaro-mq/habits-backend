@@ -33,7 +33,6 @@ export class PetService {
   }
 
   async getPets(username: string): Promise<Pet[] | null> {
-    // search user;
     const user = await this.userRepository.getUserForEmail(username);
 
     return this.petRepository.getPets(user.id);

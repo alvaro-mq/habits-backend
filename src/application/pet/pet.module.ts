@@ -6,12 +6,25 @@ import { PetRepository } from './pet.repository';
 import { UserRepository } from '../user/user.repository';
 import { PetController } from './pet.controller';
 import { UploadsController } from './upload.controller';
-import { CarnetService } from './carnet.service';
+import { CredentialService } from './credential.service';
+import { MemoryService } from './memory.service';
+import { MemoryRepository } from './memory.repository';
+import { VaccineRepository } from './vaccine.repository';
+import { VaccineService } from './vaccine.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Pet])],
   controllers: [PetController, UploadsController],
-  providers: [PetService, CarnetService, PetRepository, UserRepository],
-  exports: [PetRepository, UserRepository],
+  providers: [
+    PetService,
+    CredentialService,
+    MemoryService,
+    VaccineService,
+    PetRepository,
+    UserRepository,
+    MemoryRepository,
+    VaccineRepository,
+  ],
+  exports: [PetRepository, UserRepository, MemoryRepository, VaccineRepository],
 })
 export class PetModule {}
