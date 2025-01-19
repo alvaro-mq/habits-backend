@@ -9,7 +9,20 @@ export class PetRepository extends Repository<Pet> {
   }
 
   async createPet(data: Partial<Pet>): Promise<Pet> {
-    const user = this.create(data);
-    return this.save(user);
+    const pet = this.create(data);
+    return this.save(pet);
+  }
+
+  async getPet(petId: string): Promise<Pet> {
+    return this.findOne({ where: { id: petId } });
+  }
+
+  async getPets(userId: string): Promise<Pet[]> {
+    const pets = await this.find({
+      where: { owner: { id: userId } },
+      relations: ['owner'],
+    });
+
+    return pets;
   }
 }

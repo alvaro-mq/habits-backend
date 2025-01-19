@@ -5,9 +5,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Memory } from './memory.entity';
+import { Vaccine } from './vaccine.entity';
 
 const enumStatus = [
   Status.CREATE,
@@ -42,6 +45,9 @@ export class Pet extends AbstractEntity {
   @Column({ length: 100 })
   size: string;
 
+  @Column({ name: 'photo_url', type: 'varchar', length: 255, nullable: true })
+  photoUrl: string;
+
   @Column({
     type: 'enum',
     enum: enumStatus,
@@ -58,4 +64,10 @@ export class Pet extends AbstractEntity {
     referencedColumnName: 'id',
   })
   public owner!: User;
+
+  @OneToMany(() => Memory, (memory) => memory.pet)
+  public memory!: Memory[];
+
+  @OneToMany(() => Vaccine, (vaccine) => vaccine.pet)
+  public vaccine!: Vaccine[];
 }

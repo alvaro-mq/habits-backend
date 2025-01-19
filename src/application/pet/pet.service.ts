@@ -20,10 +20,22 @@ export class PetService {
     pet.birthDate = new Date(petDto.birthDate).toISOString();
     pet.color = petDto.color;
     pet.size = petDto.size;
+    pet.photoUrl = petDto.photo;
     pet.userCreated = userEmail;
 
     const user = await this.userRepository.getUserForEmail(userEmail);
     pet.owner = user;
     return this.petRepository.createPet(pet);
+  }
+
+  getPet(petId: string): Promise<Pet | null> {
+    return this.petRepository.getPet(petId);
+  }
+
+  async getPets(username: string): Promise<Pet[] | null> {
+    // search user;
+    const user = await this.userRepository.getUserForEmail(username);
+
+    return this.petRepository.getPets(user.id);
   }
 }

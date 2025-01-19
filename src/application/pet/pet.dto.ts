@@ -1,4 +1,4 @@
-import { IsDateString, IsString } from 'class-validator';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class PetDto {
   @IsString()
@@ -21,4 +21,8 @@ export class PetDto {
 
   @IsString()
   readonly size: string;
+
+  @IsString()
+  @IsOptional()
+  readonly photo: string;
 }
