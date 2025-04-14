@@ -20,6 +20,8 @@ import { MemoryDto } from './memory.dto';
 import { MemoryService } from './memory.service';
 import { VaccineDto } from './vaccine.dto';
 import { VaccineService } from './vaccine.service';
+import { WalkDto } from './walk.dto';
+import { WalkService } from './walk.service';
 
 @Controller('/pet')
 export class PetController {
@@ -28,13 +30,18 @@ export class PetController {
     private readonly credentialService: CredentialService,
     private readonly memoryService: MemoryService,
     private readonly vaccineService: VaccineService,
+    private readonly walkService: WalkService,
   ) {}
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
   async createPet(@Body() petDto: PetDto, @Req() req: Request) {
+    console.log(req.user);
     const user = req.user as any;
-    const pet = await this.petService.createPet(petDto, user.email);
+    const pet = await this.petService.createPet(
+      petDto,
+      user.email ?? user.userId,
+    );
     return pet;
   }
 
@@ -110,5 +117,37 @@ export class PetController {
   async getVaccines(@Param('id', new ParseUUIDPipe()) id: string) {
     const vaccines = await this.vaccineService.getVaccines(id);
     return vaccines;
+  }
+
+  @Post(':id/walk')
+  @UseGuards(AuthGuard('jwt'))
+  async createWalk(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() walkDto: WalkDto,
+    @Req() req: Request,
+  ) {
+    const user = req.user as any;
+    const walk = await this.walkService.createWalk(id, walkDto, user.email);
+    return walk;
+  }
+
+  @Get(':id/walk')
+  async getWalks(@Param('id', new ParseUUIDPipe()) id: string) {
+    const walks = await this.walkService.getWalks(id);
+    return walks;
+  }
+
+  @Get(':id/walk/summary')
+  async getWalkSummary(@Param('id') petId: string) {
+    return this.walkService.getWalkSummary(petId);
+  }
+
+  @Get(':id/walk/:walkId')
+  async getWalk(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('walkId', new ParseUUIDPipe()) walkId: string,
+  ) {
+    const walk = await this.walkService.getWalk(walkId);
+    return walk;
   }
 }

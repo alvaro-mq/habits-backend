@@ -11,6 +11,7 @@ import {
 import { User } from '../user/user.entity';
 import { Memory } from './memory.entity';
 import { Vaccine } from './vaccine.entity';
+import { Walk } from './walk.entity';
 
 const enumStatus = [
   Status.CREATE,
@@ -70,4 +71,7 @@ export class Pet extends AbstractEntity {
 
   @OneToMany(() => Vaccine, (vaccine) => vaccine.pet)
   public vaccine!: Vaccine[];
+
+  @OneToMany(() => Walk, (walk) => walk.pet)
+  public walk!: Walk[];
 }

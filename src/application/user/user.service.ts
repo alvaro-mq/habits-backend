@@ -40,7 +40,7 @@ export class UserService {
 
   // Crear un usuario
   async createCustomUser(createUserDto: CreateUserDto): Promise<User> {
-    const { username, email, password, fullName } = createUserDto;
+    const { username, email, password } = createUserDto;
 
     // Verificar si el email ya está registrado
     const existingUser = await this.userRepository.getUserForEmail(email);
@@ -57,7 +57,7 @@ export class UserService {
     const newUser = this.userRepository.create({
       username,
       email,
-      fullName,
+      fullName: 'test',
       password: hashedPassword,
       userCreated: 'hello',
       role,

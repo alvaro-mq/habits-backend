@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credencial Anverso y Reverso</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <button id="generateBtn">Generar Credencial</button>
+
+  <script>
+    document.getElementById('generateBtn').addEventListener('click', () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: [54, 86] // Tamaño de tarjeta CR80
+      });
+
+      // Anverso
+      const frontBgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPwxydvGl4tAt76ihEHszlKHqRMHatDla4mQ&s";
+      const frontImg = new Image();
+      frontImg.onload = function () {
+        doc.addImage(frontImg, "JPEG", 0, 0, 86, 54);
+
+        // Título y Datos en el Anverso
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.setTextColor(255, 255, 255);
+        doc.text("CREDENCIAL DE IDENTIDAD", 43, 10, { align: "center" });
+
+        const holderImgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4tJe9i2qhfcWyyFwFhyRWmlHBPChnMwF0Fg&s"; // Foto del titular
+        const holderImg = new Image();
+        holderImg.onload = function () {
+          doc.addImage(holderImg, "JPEG", 5, 15, 30, 30);
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(0, 0, 0);
+          doc.text("Nombre: Luna", 40, 20);
+          doc.text("Raza: Labrador Retriever", 40, 28);
+          doc.text("Edad: 3 años", 40, 36);
+          doc.text("Color: Negro", 40, 44);
+
+          // Reverso
+          doc.addPage();
+          const backBgUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPwxydvGl4tAt76ihEHszlKHqRMHatDla4mQ&s";
+          const backImg = new Image();
+          backImg.onload = function () {
+            doc.addImage(backImg, "JPEG", 0, 0, 86, 54);
+
+            // Texto del Reverso
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text("Teléfono de Contacto: 123-456-7890", 5, 20);
+            doc.text("Dirección: Calle Falsa 123, Ciudad", 5, 28);
+            doc.text("Información Adicional:", 5, 36);
+            doc.text("En caso de extravío, devolver a la dirección mencionada.", 5, 44);
+
+            // Guardar PDF
+            doc.save("credencial.pdf");
+          };
+          backImg.src = backBgUrl;
+        };
+        holderImg.src = holderImgUrl;
+      };
+      frontImg.src = frontBgUrl;
+    });
+  </script>
+</body>
+</html>

@@ -11,6 +11,8 @@ import { MemoryService } from './memory.service';
 import { MemoryRepository } from './memory.repository';
 import { VaccineRepository } from './vaccine.repository';
 import { VaccineService } from './vaccine.service';
+import { WalkService } from './walk.service';
+import { WalkRepository } from './walk.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Pet])],
@@ -20,11 +22,19 @@ import { VaccineService } from './vaccine.service';
     CredentialService,
     MemoryService,
     VaccineService,
+    WalkService,
     PetRepository,
     UserRepository,
     MemoryRepository,
     VaccineRepository,
+    WalkRepository,
   ],
-  exports: [PetRepository, UserRepository, MemoryRepository, VaccineRepository],
+  exports: [
+    PetRepository,
+    UserRepository,
+    MemoryRepository,
+    VaccineRepository,
+    WalkRepository,
+  ],
 })
 export class PetModule {}

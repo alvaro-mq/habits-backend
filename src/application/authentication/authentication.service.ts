@@ -51,6 +51,10 @@ export class AuthenticationService {
     };
   }
 
+  async delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   // Método para autenticar con usuario y contraseña
   async loginWithCredentials(loginDto: LoginDto) {
     const { username, password } = loginDto;
@@ -58,6 +62,7 @@ export class AuthenticationService {
     if (!user) {
       throw new Error('Invalid credentials');
     }
+    // await this.delay(3000);
     return this.login(user);
   }
 }

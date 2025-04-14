@@ -12,6 +12,7 @@ export class PetService {
   ) {}
 
   async createPet(petDto: Partial<PetDto>, userEmail: string): Promise<Pet> {
+    console.log(userEmail);
     const pet = new Pet();
     pet.name = petDto.name;
     pet.species = petDto.species;

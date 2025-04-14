@@ -4,7 +4,7 @@ import { Pet } from './pet.entity';
 
 @Entity()
 export class Vaccine extends AbstractEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'varchar', length: 255 })
