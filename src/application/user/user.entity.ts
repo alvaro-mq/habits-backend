@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { Status } from '../../common/constants';
 import { Role } from './role.entity';
-import { Pet } from '../pet/pet.entity';
 
 const enumStatus = [
   Status.CREATE,
@@ -66,7 +65,4 @@ export class User extends AbstractEntity {
     referencedColumnName: 'id',
   })
   public role!: Role;
-
-  @OneToMany(() => User, (user) => user.pet)
-  public pet!: Pet[];
 }
