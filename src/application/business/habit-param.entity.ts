@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import { AbstractEntity } from 'src/common/dto/abstract.entity';
 import { AlterEgo } from './alterego.entity';
@@ -23,7 +24,11 @@ export class HabitParam extends AbstractEntity {
   @Column()
   icon: string;
 
+  @Column({ name: 'alterEgoId', nullable: true })
+  alterEgoId: string;
+
   @ManyToOne(() => AlterEgo, (alterEgo) => alterEgo.habits, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'alterEgoId' })
   alterEgo: AlterEgo;
 
   @OneToMany(() => Habit, (habit) => habit.habitParam)

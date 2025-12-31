@@ -16,7 +16,19 @@ export class AlterEgoRepository extends Repository<AlterEgo> {
   async findAllByUserId(userId: string): Promise<AlterEgo[]> {
     return this.find({
       where: [{ userCreated: userId }, { userCreated: 'admin' }],
-      select: ['id', 'name', 'description', 'imageUrl'],
+      relations: ['habits'],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        imageUrl: true,
+        habits: {
+          id: true,
+          name: true,
+          description: true,
+          icon: true,
+        },
+      },
     });
   }
 }
