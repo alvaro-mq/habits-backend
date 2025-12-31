@@ -1,19 +1,25 @@
-// users.controller.ts
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './create-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  // Endpoint para crear un usuario
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createCustomUser(createUserDto);
   }
 
-  // Endpoint para obtener todos los usuarios (opcional)
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  async getMe(@Req() req: Request) {
+    const user = req.user as any;
+    return this.userService.findById(user.userId);
+  }
+
   @Get()
   async getUsers() {
     return this.userService.findAll();

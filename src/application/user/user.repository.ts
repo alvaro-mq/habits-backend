@@ -16,4 +16,11 @@ export class UserRepository extends Repository<User> {
     const user = this.create(data);
     return this.save(user);
   }
+
+  async getUserById(id: string): Promise<User | null> {
+    return this.findOne({
+      where: { id },
+      select: ['id', 'oidcId', 'username', 'fullName', 'email', 'photo'],
+    });
+  }
 }

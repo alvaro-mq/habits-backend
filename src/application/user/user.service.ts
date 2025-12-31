@@ -38,37 +38,35 @@ export class UserService {
     return this.userRepository.createUser(user);
   }
 
-  // Crear un usuario
   async createCustomUser(createUserDto: CreateUserDto): Promise<User> {
     const { username, email, password } = createUserDto;
 
-    // Verificar si el email ya está registrado
     const existingUser = await this.userRepository.getUserForEmail(email);
     if (existingUser) {
       throw new Error('Email is already registered');
     }
 
-    // Cifrar la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const role = await this.roleRepository.getRoleForName('TUTOR');
 
-    // Crear un nuevo usuario
     const newUser = this.userRepository.create({
       username,
       email,
       fullName: 'test',
       password: hashedPassword,
-      userCreated: 'hello',
+      userCreated: 'admin',
       role,
     });
 
-    // Guardar en la base de datos
     return this.userRepository.save(newUser);
   }
 
-  // Obtener todos los usuarios (opcional)
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
+  }
+
+  async findById(id: string): Promise<User | null> {
+    return this.userRepository.getUserById(id);
   }
 }
