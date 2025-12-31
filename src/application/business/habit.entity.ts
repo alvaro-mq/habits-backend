@@ -4,11 +4,11 @@ import {
   Column,
   ManyToOne,
   OneToMany,
-  CreateDateColumn,
 } from 'typeorm';
 import { HabitLog } from './habit-log.entity';
 import { AbstractEntity } from 'src/common/dto/abstract.entity';
 import { User } from '../user/user.entity';
+import { HabitParam } from './habit-param.entity';
 
 @Entity()
 export class Habit extends AbstractEntity {
@@ -33,6 +33,6 @@ export class Habit extends AbstractEntity {
   @OneToMany(() => HabitLog, (log) => log.habit, { cascade: true })
   logs: HabitLog[];
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @ManyToOne(() => HabitParam, (param) => param.habits, { onDelete: 'CASCADE' })
+  habitParam: HabitParam;
 }
