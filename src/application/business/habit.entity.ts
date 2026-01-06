@@ -21,6 +21,12 @@ export class Habit extends AbstractEntity {
   @Column({ nullable: true })
   description: string;
 
+  @Column({ nullable: true })
+  reminderTime: string;
+
+  @Column('text', { array: true, nullable: true })
+  reminderDays: string[];
+
   @Column({ default: 1 })
   difficulty: number;
 
