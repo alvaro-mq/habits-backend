@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { AbstractEntity } from 'src/common/dto/abstract.entity';
 import { HabitParam } from './habit-param.entity';
+import { UserAlterEgo } from './user-alterego.entity';
 
 @Entity()
 export class AlterEgo extends AbstractEntity {
@@ -27,4 +28,7 @@ export class AlterEgo extends AbstractEntity {
 
   @OneToMany(() => HabitParam, (param) => param.alterEgo)
   public habits!: HabitParam[];
+
+  @OneToMany(() => UserAlterEgo, (userAlterEgo) => userAlterEgo.alterEgo)
+  public userAlterEgos!: UserAlterEgo[];
 }

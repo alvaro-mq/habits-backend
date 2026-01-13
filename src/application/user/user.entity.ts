@@ -10,6 +10,7 @@ import {
 import { Status } from '../../common/constants';
 import { Role } from './role.entity';
 import { Habit } from '../business/habit.entity';
+import { UserAlterEgo } from '../business/user-alterego.entity';
 
 const enumStatus = [
   Status.CREATE,
@@ -69,4 +70,7 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => Habit, (habit) => habit.user)
   public habits!: Habit[];
+
+  @OneToMany(() => UserAlterEgo, (userAlterEgo) => userAlterEgo.user)
+  public userAlterEgos!: UserAlterEgo[];
 }
