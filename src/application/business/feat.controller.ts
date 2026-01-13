@@ -20,6 +20,13 @@ export class FeatController {
     return this.featService.findLatest(user.userId);
   }
 
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  async getFeats(@Req() req: Request) {
+    const user = req.user as any;
+    return this.featService.findAllByUser(user.userId);
+  }
+
   @Post()
   @UseGuards(AuthGuard('jwt'))
   async createFeat(

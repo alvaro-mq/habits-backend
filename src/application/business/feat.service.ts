@@ -54,4 +54,12 @@ export class FeatService {
       relations: ['featParam'],
     });
   }
+
+  async findAllByUser(userId: string): Promise<Feat[]> {
+    return this.featRepository.find({
+      where: { user: { id: userId } },
+      order: { date: 'DESC' },
+      relations: ['featParam'],
+    });
+  }
 }
