@@ -5,6 +5,9 @@ import { UserRepository } from '../user/user.repository';
 import { CreateHabitDto } from './create-habit.dto';
 import { HabitParamRepository } from './habit-param.repository';
 import { AlterEgo } from './alterego.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, In } from 'typeorm';
+import { UserAlterEgo } from './user-alterego.entity';
 
 @Injectable()
 export class HabitService {
@@ -12,6 +15,8 @@ export class HabitService {
     private readonly habitRepository: HabitRepository,
     private readonly userRepository: UserRepository,
     private readonly habitParamRepository: HabitParamRepository,
+    @InjectRepository(UserAlterEgo)
+    private readonly userAlterEgoRepository: Repository<UserAlterEgo>,
   ) {}
 
   async createHabit(
@@ -46,15 +51,48 @@ export class HabitService {
       relations: ['habitParam', 'habitParam.alterEgo'],
     });
 
+    // 2. Extract unique AlterEgo IDs
+    const uniqueAlterEgoIds = new Set<string>();
+    habits.forEach(h => {
+        if (h.habitParam?.alterEgo?.id) {
+            uniqueAlterEgoIds.add(h.habitParam.alterEgo.id);
+        }
+    });
+
+    // 3. Fetch UserAlterEgo customizations for this user and these AlterEgos
+    let userCustomizations: UserAlterEgo[] = [];
+    if (uniqueAlterEgoIds.size > 0) {
+        userCustomizations = await this.userAlterEgoRepository.find({
+            where: {
+                user: { id: userId },
+                alterEgo: { id: In(Array.from(uniqueAlterEgoIds)) }
+            },
+            relations: ['alterEgo']
+        });
+    }
+    
+    // Map customizations by AlterEgoId
+    const customizationMap = new Map<string, UserAlterEgo>();
+    userCustomizations.forEach(uc => {
+        if(uc.alterEgo) customizationMap.set(uc.alterEgo.id, uc);
+    });
+
     const alterEgoMap = new Map<string, any>();
 
     for (const habit of habits) {
+      if (!habit.habitParam || !habit.habitParam.alterEgo) continue;
+
       const alterEgo = habit.habitParam.alterEgo;
       const habitParam = habit.habitParam;
 
       if (!alterEgoMap.has(alterEgo.id)) {
+        // Apply customization if exists
+        const customization = customizationMap.get(alterEgo.id);
+        
         alterEgoMap.set(alterEgo.id, {
           ...alterEgo,
+          customName: customization?.customName || alterEgo.customName, // Override if exists
+          imageUrl: customization?.customImage || alterEgo.imageUrl, // Override if exists
           habits: new Map<string, any>(),
         });
       }
