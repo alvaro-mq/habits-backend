@@ -39,7 +39,7 @@ export class UserService {
   }
 
   async createCustomUser(createUserDto: CreateUserDto): Promise<User> {
-    const { username, email, password, gender } = createUserDto;
+    const { username, email, password, gender, fullName } = createUserDto;
 
     const existingUser = await this.userRepository.getUserForEmail(email);
     if (existingUser) {
@@ -53,7 +53,7 @@ export class UserService {
     const newUser = this.userRepository.create({
       username,
       email,
-      fullName: 'test',
+      fullName,
       password: hashedPassword,
       userCreated: 'admin',
       role,

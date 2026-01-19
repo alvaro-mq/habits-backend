@@ -7,8 +7,8 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  /* @IsEmail()
-  fullName: string; */
+  @IsEmail()
+  fullName: string;
 
   @IsString()
   @MinLength(6)
