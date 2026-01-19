@@ -12,4 +12,24 @@ export class HabitLogRepository extends Repository<HabitLog> {
     const log = this.create(data);
     return this.save(log);
   }
+
+  async findCompletedLogsByUser(userId: string): Promise<string[]> {
+    console.log(userId);
+    const result = await this.createQueryBuilder('log')
+      .select('DISTINCT log.date', 'date')
+      .where('log.userCreated = :userId', { userId })
+      .andWhere('log.completed = :completed', { completed: true })
+      .orderBy('log.date', 'DESC')
+      .getRawMany();
+    return result.map(r => r.date);
+  }
+
+  async countTotalCompletedByUser(userId: string): Promise<number> {
+    return this.count({
+      where: {
+        userCreated: userId,
+        completed: true,
+      },
+    });
+  }
 }

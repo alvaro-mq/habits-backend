@@ -41,4 +41,14 @@ export class HabitLogService {
 
     return this.habitLogRepository.createLog(log);
   }
+
+  async calculateStreak(userId: string): Promise<number> {
+    const dates = await this.habitLogRepository.findCompletedLogsByUser(userId);
+    
+    return dates.length;
+  }
+
+  async getTotalCompletedLogs(userId: string): Promise<number> {
+    return this.habitLogRepository.countTotalCompletedByUser(userId);
+  }
 }

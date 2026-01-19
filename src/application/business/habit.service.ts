@@ -46,11 +46,16 @@ export class HabitService {
   }
 
   async getAlterEgosWithHabits(userId: string): Promise<any[]> {
-    const habits = await this.habitRepository.find({
-      where: { user: { id: userId } },
-      relations: ['habitParam', 'habitParam.alterEgo'],
-    });
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
+    const habits = await this.habitRepository.createQueryBuilder('habit')
+      .leftJoinAndSelect('habit.habitParam', 'habitParam')
+      .leftJoinAndSelect('habitParam.alterEgo', 'alterEgo')
+      .leftJoinAndSelect('habit.logs', 'log', 'log.date = :today', { today: todayStr })
+      .where('habit.user = :userId', { userId })
+      .getMany();
+    
     // 2. Extract unique AlterEgo IDs
     const uniqueAlterEgoIds = new Set<string>();
     habits.forEach(h => {
@@ -107,9 +112,15 @@ export class HabitService {
 
       const hpEntry = aeEntry.habits.get(habitParam.id);
       
+      // Calculate completion status for today
+      const completed = habit.logs && habit.logs.length > 0 ? habit.logs[0].completed : false;
+
       // Clean up relations to avoid circularity or redundant data in the response
-      const { habitParam: _, ...habitData } = habit;
-      hpEntry.habits.push(habitData);
+      const { habitParam: _, logs: __, ...habitData } = habit as any;
+      hpEntry.habits.push({
+        ...habitData,
+        completed
+      });
     }
 
     // Convert Maps back to arrays
