@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Req, Patch } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -23,5 +23,12 @@ export class UserController {
   @Get()
   async getUsers() {
     return this.userService.findAll();
+  }
+
+  @Patch('profile')
+  @UseGuards(AuthGuard('jwt'))
+  async updateProfile(@Req() req: Request, @Body() body: { fullName?: string; photo?: string }) {
+    const user = req.user as any;
+    return this.userService.updateProfile(user.userId, body);
   }
 }

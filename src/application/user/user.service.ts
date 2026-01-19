@@ -69,4 +69,20 @@ export class UserService {
   async findById(id: string): Promise<User | null> {
     return this.userRepository.getUserById(id);
   }
+
+  async updateProfile(userId: string, data: { fullName?: string; photo?: string }): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (data.fullName) {
+      user.fullName = data.fullName;
+    }
+    if (data.photo) {
+      user.photo = data.photo;
+    }
+
+    return this.userRepository.save(user);
+  }
 }
