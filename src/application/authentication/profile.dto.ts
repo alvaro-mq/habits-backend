@@ -8,4 +8,5 @@ export class ProfileDto {
   accessToken: string;
   refreshToken: string;
   role?: string;
+  gender?: string;
 }

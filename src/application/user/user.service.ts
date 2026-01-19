@@ -39,7 +39,7 @@ export class UserService {
   }
 
   async createCustomUser(createUserDto: CreateUserDto): Promise<User> {
-    const { username, email, password } = createUserDto;
+    const { username, email, password, gender } = createUserDto;
 
     const existingUser = await this.userRepository.getUserForEmail(email);
     if (existingUser) {
@@ -57,6 +57,7 @@ export class UserService {
       password: hashedPassword,
       userCreated: 'admin',
       role,
+      gender,
     });
 
     return this.userRepository.save(newUser);
@@ -70,7 +71,7 @@ export class UserService {
     return this.userRepository.getUserById(id);
   }
 
-  async updateProfile(userId: string, data: { fullName?: string; photo?: string }): Promise<User> {
+  async updateProfile(userId: string, data: { fullName?: string; photo?: string; gender?: string }): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new Error('User not found');
@@ -81,6 +82,9 @@ export class UserService {
     }
     if (data.photo) {
       user.photo = data.photo;
+    }
+    if (data.gender) {
+      user.gender = data.gender;
     }
 
     return this.userRepository.save(user);

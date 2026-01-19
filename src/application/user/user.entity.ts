@@ -53,6 +53,13 @@ export class User extends AbstractEntity {
 
   @Column({
     type: 'enum',
+    enum: ['F', 'M'],
+    default: 'M',
+  })
+  gender: string;
+
+  @Column({
+    type: 'enum',
     enum: enumStatus,
     default: Status.CREATE,
   })

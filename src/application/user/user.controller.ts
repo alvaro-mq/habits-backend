@@ -27,7 +27,7 @@ export class UserController {
 
   @Patch('profile')
   @UseGuards(AuthGuard('jwt'))
-  async updateProfile(@Req() req: Request, @Body() body: { fullName?: string; photo?: string }) {
+  async updateProfile(@Req() req: Request, @Body() body: { fullName?: string; photo?: string; gender?: string }) {
     const user = req.user as any;
     return this.userService.updateProfile(user.userId, body);
   }
