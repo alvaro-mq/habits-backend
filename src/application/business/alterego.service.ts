@@ -47,4 +47,59 @@ export class AlterEgoService {
 
     return this.userAlterEgoRepository.save(userAlterEgo);
   }
+
+  async getRadarStats(userId: string): Promise<any[]> {
+    const stats = await this.alterEgoRepository
+      .createQueryBuilder('ae')
+      .leftJoin('ae.habits', 'hp')
+      .leftJoin('hp.habits', 'h', 'h.userId = :userId', { userId })
+      .select('ae.name', 'name')
+      .addSelect('COUNT(h.id)', 'count')
+      .groupBy('ae.id')
+      .addGroupBy('ae.name')
+      .getRawMany();
+
+    return stats.map(s => ({
+      name: s.name,
+      count: parseInt(s.count, 10),
+    }));
+  }
+
+  async getAlterEgoXP(userId: string): Promise<any[]> {
+    const stats = await this.alterEgoRepository
+      .createQueryBuilder('ae')
+      .leftJoin('ae.habits', 'hp')
+      .leftJoin('hp.habits', 'h', 'h.userId = :userId', { userId })
+      .leftJoin('h.logs', 'hl', 'hl.completed = :completed', { completed: true })
+      .select('ae.id', 'id')
+      .addSelect('ae.name', 'name')
+      .addSelect('ae.imageUrl', 'imageUrl')
+      .addSelect('ae.customName', 'customName')
+      .addSelect('COUNT(hl.id)', 'xp')
+      .groupBy('ae.id')
+      .addGroupBy('ae.name')
+      .addGroupBy('ae.imageUrl')
+      .addGroupBy('ae.customName')
+      .getRawMany();
+
+    const customizations = await this.userAlterEgoRepository.find({
+      where: { user: { id: userId } },
+      relations: ['alterEgo'],
+    });
+
+    const customMap = new Map<string, UserAlterEgo>();
+    customizations.forEach(c => {
+      if (c.alterEgo) customMap.set(c.alterEgo.id, c);
+    });
+
+    return stats.map(s => {
+      const custom = customMap.get(s.id);
+      return {
+        id: s.id,
+        name: s.name,
+        imageUrl: custom?.customImage || s.imageUrl,
+        xp: parseInt(s.xp, 10),
+      };
+    });
+  }
 }

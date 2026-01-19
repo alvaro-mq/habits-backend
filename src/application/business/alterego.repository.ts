@@ -20,6 +20,7 @@ export class AlterEgoRepository extends Repository<AlterEgo> {
       select: {
         id: true,
         name: true,
+        customName: true,
         description: true,
         imageUrl: true,
         habits: {
