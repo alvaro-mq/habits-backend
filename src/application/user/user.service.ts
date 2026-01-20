@@ -39,7 +39,7 @@ export class UserService {
   }
 
   async createCustomUser(createUserDto: CreateUserDto): Promise<User> {
-    const { username, email, password, gender, fullName } = createUserDto;
+    const { email, password, gender, fullName } = createUserDto;
 
     const existingUser = await this.userRepository.getUserForEmail(email);
     if (existingUser) {
@@ -51,7 +51,7 @@ export class UserService {
     const role = await this.roleRepository.getRoleForName('TUTOR');
 
     const newUser = this.userRepository.create({
-      username,
+      username: email,
       email,
       fullName,
       password: hashedPassword,

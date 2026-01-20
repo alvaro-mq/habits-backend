@@ -20,7 +20,11 @@ export class AlterEgoService {
   ): Promise<AlterEgo> {
     const alterEgo = new AlterEgo();
     alterEgo.name = alterEgoDto.name;
+    alterEgo.nameFemale = alterEgoDto.nameFemale;
     alterEgo.description = alterEgoDto.description;
+    alterEgo.imageUrl = alterEgoDto.imageUrl;
+    alterEgo.imageUrlFemale = alterEgoDto.imageUrlFemale;
+    alterEgo.customNameFemale = alterEgoDto.customNameFemale;
     alterEgo.userCreated = userId;
 
     return this.alterEgoRepository.createAlterEgo(alterEgo);
@@ -54,13 +58,16 @@ export class AlterEgoService {
       .leftJoin('ae.habits', 'hp')
       .leftJoin('hp.habits', 'h', 'h.userId = :userId', { userId })
       .select('ae.name', 'name')
+      .addSelect('ae.nameFemale', 'nameFemale')
       .addSelect('COUNT(h.id)', 'count')
       .groupBy('ae.id')
       .addGroupBy('ae.name')
+      .addGroupBy('ae.nameFemale')
       .getRawMany();
 
     return stats.map(s => ({
       name: s.name,
+      nameFemale: s.nameFemale,
       count: parseInt(s.count, 10),
     }));
   }
@@ -76,10 +83,16 @@ export class AlterEgoService {
       .addSelect('ae.imageUrl', 'imageUrl')
       .addSelect('ae.customName', 'customName')
       .addSelect('COUNT(hl.id)', 'xp')
+      .addSelect('ae.nameFemale', 'nameFemale')
+      .addSelect('ae.customNameFemale', 'customNameFemale')
+      .addSelect('ae.imageUrlFemale', 'imageUrlFemale')
       .groupBy('ae.id')
       .addGroupBy('ae.name')
+      .addGroupBy('ae.nameFemale')
       .addGroupBy('ae.imageUrl')
+      .addGroupBy('ae.imageUrlFemale')
       .addGroupBy('ae.customName')
+      .addGroupBy('ae.customNameFemale')
       .getRawMany();
 
     const customizations = await this.userAlterEgoRepository.find({
@@ -97,7 +110,10 @@ export class AlterEgoService {
       return {
         id: s.id,
         name: s.name,
+        nameFemale: s.nameFemale,
         imageUrl: custom?.customImage || s.imageUrl,
+        imageUrlFemale: s.imageUrlFemale,
+        customNameFemale: s.customNameFemale,
         xp: parseInt(s.xp, 10),
       };
     });

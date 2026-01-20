@@ -49,6 +49,11 @@ export class HabitService {
     const now = new Date();
     const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
     const habits = await this.habitRepository.createQueryBuilder('habit')
       .leftJoinAndSelect('habit.habitParam', 'habitParam')
       .leftJoinAndSelect('habitParam.alterEgo', 'alterEgo')
@@ -96,8 +101,10 @@ export class HabitService {
         
         alterEgoMap.set(alterEgo.id, {
           ...alterEgo,
-          customName: customization?.customName || alterEgo.customName, // Override if exists
-          imageUrl: customization?.customImage || alterEgo.imageUrl, // Override if exists
+          customName: user.gender === 'M' ? (customization?.customName || alterEgo.customName) : alterEgo.customName,
+          imageUrl: user.gender === 'M' ? (customization?.customImage || alterEgo.imageUrl) : alterEgo.imageUrl, 
+          customNameFemale: user.gender === 'F' ? (customization?.customName || alterEgo.customNameFemale) : alterEgo.customNameFemale,
+          imageUrlFemale: user.gender === 'F' ? (customization?.customImage || alterEgo.imageUrlFemale) : alterEgo.imageUrlFemale,
           habits: new Map<string, any>(),
         });
       }

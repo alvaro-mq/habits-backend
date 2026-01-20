@@ -21,10 +21,19 @@ export class AlterEgo extends AbstractEntity {
   description: string;
 
   @Column({ nullable: true })
+  nameFemale: string;
+
+  @Column({ nullable: true })
   customName: string;
 
   @Column({ nullable: true })
+  customNameFemale: string;
+
+  @Column({ nullable: true })
   imageUrl: string;
+
+  @Column({ nullable: true })
+  imageUrlFemale: string;
 
   @OneToMany(() => HabitParam, (param) => param.alterEgo)
   public habits!: HabitParam[];
