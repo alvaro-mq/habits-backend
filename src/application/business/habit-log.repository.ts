@@ -32,4 +32,40 @@ export class HabitLogRepository extends Repository<HabitLog> {
       },
     });
   }
+
+  async findMonthlyLogs(userId: string, year: number, month: number): Promise<any[]> {
+    const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+    // Calculate end date: start date of next month
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear = month === 12 ? year + 1 : year;
+    const endDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
+
+    return this.createQueryBuilder('log')
+      .leftJoinAndSelect('log.habit', 'habit')
+      .leftJoinAndSelect('habit.habitParam', 'habitParam')
+      .leftJoinAndSelect('habitParam.alterEgo', 'alterEgo')
+      .leftJoin('alterEgo.userAlterEgos', 'userAlterEgo', '"userAlterEgo"."userId"::text = :userId', { userId })
+      .where('log.userCreated = :userId', { userId })
+      .andWhere('log.completed = :completed', { completed: true })
+      .andWhere('log.date >= :startDate', { startDate })
+      .andWhere('log.date < :endDate', { endDate })
+      .select([
+        'log.id',
+        'log.date',
+        'habit.id',
+        'habit.name',
+        'habitParam.id',
+        'habitParam.icon',
+        'alterEgo.id',
+        'alterEgo.name',
+        'alterEgo.nameFemale',
+        'alterEgo.customName',
+        'alterEgo.customNameFemale',
+        'alterEgo.imageUrl',
+        'alterEgo.imageUrlFemale',
+        'userAlterEgo.customName',
+        'userAlterEgo.customImage'
+      ])
+      .getRawMany();
+  }
 }

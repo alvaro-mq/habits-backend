@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Req, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get, Query } from '@nestjs/common';
 import { HabitLogService } from './habit-log.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
@@ -28,5 +28,12 @@ export class HabitLogController {
     const user = req.user as any;
     const total = await this.habitLogService.getTotalCompletedLogs(user.userId);
     return { total };
+  }
+
+  @Get('calendar')
+  @UseGuards(AuthGuard('jwt'))
+  async getCalendar(@Req() req: Request, @Query('year') year: string, @Query('month') month: string) {
+    const user = req.user as any;
+    return this.habitLogService.getMonthlyLogs(user.userId, parseInt(year), parseInt(month));
   }
 }
