@@ -16,6 +16,9 @@ const AppDataSource = new DataSource({
   migrations: ['database/seeders/*-seeder.ts'],
   migrationsRun: false,
   logging: true,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 export default AppDataSource;
